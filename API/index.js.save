@@ -1,0 +1,21 @@
+const express = require('express')
+const app = express()
+const mongoose = require('mongoose')
+
+app.use(
+	express.urlencoded({
+	extended: true,
+	}),
+)
+
+app.use(express.json())
+app.listen(3000)
+
+// conection
+mongoose.connect(
+'mongodb+srv://henry:<password>@cluster0.lojbbih.mongodb.net/?retryW'
+// requests
+app.get("/", (req, res) => {
+	res.json({ message: "Ola Express!" });
+});
+
