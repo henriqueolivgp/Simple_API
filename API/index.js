@@ -17,7 +17,7 @@ app.use(express.json())
 
 // connection
 mongoose.connect(
-'mongodb+srv://henry:4578@cluster0.lojbbih.mongodb.net/?retryWrites=true&w=majority',
+'mongodb+srv://henry:4545@cluster0.selfb9i.mongodb.net/?retryWrites=true&w=majority',
 )
 .then(() => {
 	console.log('Conexao a BD bem sucedida!')
@@ -53,6 +53,21 @@ app.get('/person', async (req, res) => {
 		res.status(200).json(people)
 		} catch (error) {
 		res.status(500).json({ erro: eero })
+	}
+})
+
+// get person by Id
+app.get('/person/:id', async (req, res) => {
+	const id = req.params.id
+	try {
+		const person = await Person.findOne({ _id: id})
+		if (!person) {
+			res.status(422).json({ message: 'Utilizador nao encontrado!' })
+			return
+		}
+		res.status (200).json(person)
+	}catch (error) {
+		res.status(500).json ({ err: error })
 	}
 })
 
