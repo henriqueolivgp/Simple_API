@@ -1,82 +1,114 @@
 // imports
-const express = require('express')
-const app = express()
-const mongoose = require('mongoose')
+const express = require("express");
+const app = express();
+const mongoose = require("mongoose");
 
 // models
-const Person = require('./models/Person')
+const Person = require("./models/Person");
 
 // start api
 app.use(
-	express.urlencoded({
-	extended: true,
-	}),
-)
+  express.urlencoded({
+    extended: true,
+  })
+);
 
-app.use(express.json())
+app.use(express.json());
 
 // connection
-mongoose.connect(
-'mongodb+srv://henry:4545@cluster0.selfb9i.mongodb.net/?retryWrites=true&w=majority',
-)
-.then(() => {
-	console.log('Conexao a BD bem sucedida!')
-	app.listen(3000)
-})
-.catch((err) => console.log(err))
+mongoose
+  .connect(
+    "mongodb+srv://henry:4545@cluster0.selfb9i.mongodb.net/?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    console.log("Conexao a BD bem sucedida!");
+    app.listen(3000);
+  })
+  .catch((err) => console.log(err));
 
-// requests 
+// requests
 app.get("/", (req, res) => {
-	res.json({ message: "Ola Express!" });
-}); 
+  res.json({ message: "Ola Express!" });
+});
 
 // post one person
-app.post('/person', async (req, res) => {
+app.post("/person", async (req, res) => {
+  const { name, salary, approved } = req.body;
+  const person = {
+    name,
+    salary,
+    approved,
+  };
+  try {
+    await Person.create(person);
+    res
+      .status(201)
+      .json({ message: "Pessoa foi inserida com sucesso no sistema!!" });
+  } catch (error) {
+    res.status(500).json({ erro: error });
+  }
+});
+
+// get all persons
+app.get("/person", async (req, res) => {
+  try {
+    const people = await Person.find();
+    res.status(200).json(people);
+  } catch (error) {
+    res.status(500).json({ erro: eero });
+  }
+});
+
+// get person by Id
+app.get("/person/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const person = await Person.findOne({ _id: id });
+    if (!person) {
+      res.status(422).json({ message: "Utilizador não encontrado!" });
+      return;
+    }
+    res.status(200).json(person);
+  } catch (error) {
+    res.status(500).json({ err: error });
+  }
+});
+
+// get person by id
+app.patch("/person/:id", async (req, res) => {
+	const id = req.params.id
 	const { name, salary, approved } = req.body
 	const person = {
 		name,
 		salary,
 		approved,
-		}
-	try {
-		await Person.create(person)
-		res.status(201).json({ message: 'Pessoa foi inserida com sucesso no sistema!!' })
-		} catch (error) {
-		res.status(500).json({ erro: error })
-		}
-})
-
-// get all persons
-app.get('/person', async (req, res) => {
-	try{
-		const people = await Person.find()
-		res.status(200).json(people)
-		} catch (error) {
-		res.status(500).json({ erro: eero })
 	}
-})
-
-// get person by Id
-app.get('/person/:id', async (req, res) => {
-	const id = req.params.id
-	try {
-		const person = await Person.findOne({ _id: id})
-		if (!person) {
+	try{
+		const updatePerson = await Person.updateOne({ _id: id }, person)
+		if( updatePerson.matachedCount === 0){
 			res.status(422).json({ message: 'Utilizador nao encontrado!' })
 			return
 		}
-		res.status (200).json(person)
-	}catch (error) {
-		res.status(500).json ({ err: error })
+		res.status(200).json(person)
+	} catch (error) {
+		res.status(500).json({ error: error})
 	}
-})
+});
 
-app.get('/person/:id', async (req, res) => {
-	const id = req.params.id
+// delete person by Id
+app.delete("/person/:id", async (req, res) => {
+	const id = req.params.id;
+  
+	const person = await Person.findOne({ _id: id });
+    if (!person) {
+      res.status(422).json({ message: "Utilizador não encontrado!" });
+      return
+    }
 	try {
-		const person = await Person.findOne({ _id: id})
-		res.status (200).json(person)
-	}catch (error) {
-		res.status(500).json ({ err: error })
-	}
+	  await Person.deleteOne({ _id: id });
+		res.status(200).json({ message: "Utilizador Removido com sucesso!" });
+	  } catch (error){
+	  res.status(500).json({ erro: error });
+	  }
 })
