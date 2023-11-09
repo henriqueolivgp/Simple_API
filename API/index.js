@@ -112,3 +112,20 @@ app.delete("/person/:id", async (req, res) => {
 	  res.status(500).json({ erro: error });
 	  }
 })
+/*
+Test
+// delete all person's
+app.delete("/person", async (req, res) => {
+  const person = await Person.findOne({ _id: id });
+    if (!person) {
+      res.status(422).json({ message: "Person Not Found!!" });
+      return
+    }
+  try {
+    res.status(200).json({message: "All person's was deleted"});
+  } catch (error) {
+    res.status(500).json({ erro: eero });
+  }
+});
+
+*/
