@@ -43,7 +43,7 @@ app.post("/person", async (req, res) => {
     await Person.create(person);
     res
       .status(201)
-      .json({ message: "Pessoa foi inserida com sucesso no sistema!!" });
+      .json({ message: "Person inserted successfully inside the system!!" });
   } catch (error) {
     res.status(500).json({ erro: error });
   }
@@ -66,7 +66,7 @@ app.get("/person/:id", async (req, res) => {
   try {
     const person = await Person.findOne({ _id: id });
     if (!person) {
-      res.status(422).json({ message: "Utilizador não encontrado!" });
+      res.status(422).json({ message: "Person Not Found!!" });
       return;
     }
     res.status(200).json(person);
@@ -87,7 +87,7 @@ app.patch("/person/:id", async (req, res) => {
 	try{
 		const updatePerson = await Person.updateOne({ _id: id }, person)
 		if( updatePerson.matachedCount === 0){
-			res.status(422).json({ message: 'Utilizador nao encontrado!' })
+			res.status(422).json({ message: 'Person Not Found!!' })
 			return
 		}
 		res.status(200).json(person)
@@ -99,15 +99,15 @@ app.patch("/person/:id", async (req, res) => {
 // delete person by Id
 app.delete("/person/:id", async (req, res) => {
 	const id = req.params.id;
-  
+
 	const person = await Person.findOne({ _id: id });
     if (!person) {
-      res.status(422).json({ message: "Utilizador não encontrado!" });
+      res.status(422).json({ message: "Person Not Found!!" });
       return
     }
 	try {
 	  await Person.deleteOne({ _id: id });
-		res.status(200).json({ message: "Utilizador Removido com sucesso!" });
+		res.status(200).json({ message: "Person as been removed successfully" });
 	  } catch (error){
 	  res.status(500).json({ erro: error });
 	  }
